@@ -25,6 +25,7 @@ func NewExecutor(ctx context.Context, logger io.Writer) (*Executor, error) {
 }
 
 func (e *Executor) ExecuteJob(name string, job *Job) error {
+	e.Logger.Write([]byte(fmt.Sprintf("Running job %s\n", name)))
 	src := e.Client.Host().Directory(".")
 
 	runner := e.Client.Container().
