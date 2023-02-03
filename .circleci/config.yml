@@ -3,17 +3,30 @@ version: 2.1
 jobs:
   job_one:
     docker:
-      - image: circleci/node:12
+      - image: node:16
     steps:
       - run:
           name: Install npm dependencies
           command: |
-            echo sudo npm install -g
+            echo npm install
       - run:
           name: Run Unit Tests
           command: |
-            echo tests passed
+            echo npm test
+  job_two:
+    docker:
+      - image: golang:latest
+    steps:
+      - run:
+          name: Run Go Tests
+          command: |
+            echo go test
+      - run:
+          name: Run Go Build
+          command: |
+            echo go build
 workflows:
   build_test:
     jobs:
       - job_one
+      - job_two
