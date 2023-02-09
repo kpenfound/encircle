@@ -1,7 +1,11 @@
 package main
 
 import (
-	"io/ioutil"
+	"bytes"
+	"encoding/json"
+	"fmt"
+	"net/http"
+	"strings"
 
 	"dagger.io/dagger"
 	"gopkg.in/yaml.v3"
@@ -52,19 +56,52 @@ func (oc *OrbCommand) GetDefaultParameters() map[string]string {
 }
 
 func (o *Orb) UnmarshalYAML(value *yaml.Node) error {
-	if value.Tag == "!!str" {
-		// TODO: get orb yaml and parse it into Jobs, Commands, Executors
-		orbYaml, err := ioutil.ReadFile(".orb_test.yml") // TODO: fetch this remotely
-		if err != nil {
-			return err
-		}
-		var orb *OrbConfig
-		err = yaml.Unmarshal(orbYaml, &orb)
-		if err != nil {
-			return err
-		}
-		o.Orb = orb
-		o.Name = value.Value
+	orbYaml, err := queryOrbDetails(value.Value)
+	if err != nil {
+		return err
 	}
+	var orb *OrbConfig
+	err = yaml.Unmarshal([]byte(orbYaml), &orb)
+	if err != nil {
+		return err
+	}
+	o.Orb = orb
+	o.Name = value.Value
 	return nil
+}
+
+func queryOrbDetails(versionref string) (string, error) {
+	name := strings.Split(versionref, "@")[0]
+	payload := fmt.Sprintf(`
+		{"operationName":"OrbDetailsQuery",
+		"variables":{"name":"%s","orbVersionRef":"%s"},
+		"query":"query OrbDetailsQuery($name: String, $orbVersionRef: String) {\n
+				orbVersion(orbVersionRef: $orbVersionRef) {\n
+					source\n
+				}\n
+			}\n
+		"}
+	`, name, versionref)
+	endpoint := "https://circleci.com/graphql-unstable"
+
+	body := bytes.NewReader([]byte(payload))
+	resp, err := http.Post(endpoint, "application/json", body)
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+
+	source := struct {
+		Data struct {
+			OrbVersion struct {
+				Source string `json:"source"`
+			} `json:"orbVersion"`
+		} `json:"data"`
+	}{}
+	dec := json.NewDecoder(resp.Body)
+	err = dec.Decode(&source)
+	if err != nil {
+		return "", err
+	}
+	return source.Data.OrbVersion.Source, nil
 }
