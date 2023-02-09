@@ -1,5 +1,6 @@
 version: 2.1
-
+orbs:
+  node: circleci/node@5.1.0
 jobs:
   job_one:
     docker:
@@ -7,12 +8,10 @@ jobs:
     steps:
       - run:
           name: Install npm dependencies
-          command: |
-            echo npm install
+          command: echo npm install
       - run:
           name: Run Unit Tests
-          command: |
-            echo npm test
+          command: echo npm test
   job_two:
     docker:
       - image: golang:latest
@@ -25,8 +24,18 @@ jobs:
           name: Run Go Build
           command: |
             echo go build
+  orb_test:
+    docker:
+      - image: 'cimg/base:stable'
+    steps:
+      - checkout
+      - node/install:
+          install-yarn: true
+          node-version: '16.13'
+      - run: node --version
 workflows:
-  build_test:
+  test:
     jobs:
       - job_one
       - job_two
+      - orb_test

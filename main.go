@@ -22,7 +22,7 @@ func main() {
 	}
 
 	// Run workflow
-	workflow := "build_test"
+	workflow := "test"
 	err = executor.ExecuteWorkflow(workflow, cfg.Workflows[workflow], cfg.Jobs)
 	if err != nil {
 		panic(err)
