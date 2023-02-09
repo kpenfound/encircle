@@ -129,7 +129,7 @@ func (s *Step) UnmarshalYAML(value *yaml.Node) error {
 				s.Command.Parameters = params
 			}
 		} else {
-			fmt.Printf("Dont know how to handle command %s\n", value.Content[0].Value)
+			fmt.Printf("warning: unhandled command %s\n", value.Content[0].Value)
 		}
 	default:
 		fmt.Printf("Unknown yaml Tag %s\n", value.Tag)

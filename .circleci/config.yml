@@ -39,3 +39,6 @@ workflows:
       - job_one
       - job_two
       - orb_test
+  test_two:
+    jobs:
+      - job_two
