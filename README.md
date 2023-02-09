@@ -1,17 +1,20 @@
 # encircle
 
-Run a circleci yaml locally with Dagger
+Run a circleci yaml locally powered by Dagger
 
 ## Using encircle
 
 - `go build` to build the `encircle` binary
-- `./encircle` will execute the yaml in `./circleci/config.yml`
+- `./encircle` will execute all workflows in the yaml `./circleci/config.yml`
+- `./encircle workflow <workflow name>` will execute the workflow `<workflow name>` in the yaml `./circleci/config.yml`
+- `./encircle job <job name>` will execute the job `<job name>` in the yaml `./circleci/config.yml`
+- To execute your own `config.yml`, run encircle from your projects root directory
 
-Notes:
+TODO:
 
-- Right now it's hardcoded to a specific workflow in the yaml
 - Still a lot to go on the config
-- Cant handle conditionals
+- Handle yaml conditionals
+- Probably need some tests
 
 Sample output:
 
