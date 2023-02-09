@@ -1,6 +1,6 @@
 # encircle
 
-Run a circleci yaml locally powered by Dagger
+Run a circleci yaml locally powered by [Dagger](https://dagger.io)
 
 ## Using encircle
 
