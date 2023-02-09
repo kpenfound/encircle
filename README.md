@@ -10,63 +10,47 @@ Run a circleci yaml locally with Dagger
 Notes:
 
 - Right now it's hardcoded to a specific workflow in the yaml
-- Doesn't understand non-`run` steps like `checkout` or orbs
 - Still a lot to go on the config
+- Cant handle conditionals
 
 Sample output:
 
-```
-go build && ./encircle
-Loading config at ./.circleci/config.yml
-Running workflow build_test
-#1 resolve image config for docker.io/library/node:16
-#1 DONE 2.5s
+```shell
+./encircle workflow test_two
+loading config at ./.circleci/config.yml
+warning: unhandled command when
+warning: unhandled command when
+warning: unhandled command when
+warning: unhandled command when
+warning: unhandled command when
+warning: unhandled command when
+warning: skipping checkout for local dev
+running workflow test_two
+running job job_two
+1 resolve image config for docker.io/library/golang:latest
+1 DONE 0.4s
 
-#2 Install npm dependencies
-#2 DONE 0.0s
+2 Run Go Tests
+2 DONE 0.0s
 
-#3 host.directory /Users/kylepenfound/github.com/encircle
-#3 transferring /Users/kylepenfound/github.com/encircle: 29B
-#3 ...
+3 host.directory /Users/kylepenfound/github.com/encircle
+3 transferring /Users/kylepenfound/github.com/encircle: 6.84kB 0.0s done
+3 DONE 0.1s
 
-#4 from node:16
-#4 resolve docker.io/library/node:16 0.3s done
-#4 DONE 0.3s
+2 Run Go Tests
+2 DONE 0.0s
 
-#3 host.directory /Users/kylepenfound/github.com/encircle
-#3 transferring /Users/kylepenfound/github.com/encircle: 9.18MB 0.5s done
-#3 DONE 0.5s
+4 from golang:latest
+4 resolve docker.io/library/golang:latest 0.1s done
+4 DONE 0.1s
 
-#2 Install npm dependencies
-#2 0.119 npm install
-#2 0.119
-#2 DONE 0.2s
+5 job_two
+5 CACHED
 
-#5 Run Unit Tests
-#0 0.090 npm test
-#0 0.090
-#5 DONE 0.1s
+2 Run Go Tests
+2 0.094 go test
+2 DONE 0.1s
 
-#6 resolve image config for docker.io/library/golang:latest
-#6 DONE 2.2s
-
-#7 from golang:latest
-#7 resolve docker.io/library/golang:latest
-#7 resolve docker.io/library/golang:latest 0.3s done
-#7 DONE 0.3s
-
-#7 from golang:latest
-#7 sha256:77fe3ac745a5ff347cfde07c7e36e684d71ada78b8efa592ba32dcd423a2ac32 0B / 155B 0.2s
-...
-#7 extracting sha256:77fe3ac745a5ff347cfde07c7e36e684d71ada78b8efa592ba32dcd423a2ac32 done
-#7 DONE 25.5s
-
-#8 Run Go Tests
-#8 0.105 go test
-#8 0.105
-#8 DONE 0.4s
-
-#9 Run Go Build
-#0 0.104 go build
-#0 0.104
+6 Run Go Build
+0 0.067 go build
 ```

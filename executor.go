@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"strings"
 
 	"dagger.io/dagger"
 )
@@ -25,27 +24,28 @@ func NewExecutor(ctx context.Context, logger io.Writer) (*Executor, error) {
 }
 
 func (e *Executor) ExecuteJob(name string, job *Job) error {
-	e.Logger.Write([]byte(fmt.Sprintf("Running job %s\n", name)))
+	e.Logger.Write([]byte(fmt.Sprintf("running job %s\n", name)))
 	src := e.Client.Host().Directory(".")
-
 	runner := e.Client.Container().
 		Pipeline(name).
 		From(job.Docker[0].Image).
 		WithMountedDirectory("/src", src).
-		WithWorkdir("/src")
+		WithWorkdir("/src").
+		WithNewFile("/envfile", dagger.ContainerWithNewFileOpts{
+			Permissions: 0777,
+			Contents:    "",
+		}).
+		WithEnvVariable("BASH_ENV", "/envfile")
 
 	for _, s := range job.Steps {
-		runner = runner.
-			Pipeline(s.Run.Name).
-			WithExec(strings.Split(s.Run.Command, " "))
+		runner = s.ToDagger(runner, map[string]string{})
 	}
 	_, err := runner.ExitCode(e.Ctx)
 	return err
 }
 
 func (e *Executor) ExecuteWorkflow(name string, workflow *Workflow, jobs map[string]*Job) error {
-	e.Logger.Write([]byte(fmt.Sprintf("Running workflow %s\n", name)))
-
+	e.Logger.Write([]byte(fmt.Sprintf("running workflow %s\n", name)))
 	for _, jobName := range workflow.Jobs {
 		err := e.ExecuteJob(jobName, jobs[jobName])
 		if err != nil {
