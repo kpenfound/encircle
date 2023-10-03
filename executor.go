@@ -40,7 +40,7 @@ func (e *Executor) ExecuteJob(name string, job *Job) error {
 	for _, s := range job.Steps {
 		runner = s.ToDagger(runner, map[string]string{})
 	}
-	_, err := runner.ExitCode(e.Ctx)
+	_, err := runner.Sync(e.Ctx)
 	return err
 }
 
